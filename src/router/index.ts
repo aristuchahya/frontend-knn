@@ -1,6 +1,7 @@
 import FormLatih from "@/components/form-data/FormLatih.vue";
 import FormProduct from "@/components/form-data/FormProduct.vue";
 import FormSales from "@/components/form-data/FormSales.vue";
+import FormTrain from "@/components/form-data/FormTrain.vue";
 import DataLatih from "@/components/product/DataLatih.vue";
 import DataPenjualan from "@/components/product/DataPenjualan.vue";
 import DataPredict from "@/components/product/DataPredict.vue";
@@ -49,6 +50,10 @@ const routes = [
             {
                 path: 'form-sales',
                 component: FormSales
+            },
+            {
+                path: 'form-train',
+                component: FormTrain
             }
         ]
     },

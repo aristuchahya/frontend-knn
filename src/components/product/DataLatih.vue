@@ -1,6 +1,12 @@
 <template >
     <div class="p-4 w-1/2 m-auto">
+      <div class="flex">
+        
         <h1 class="text-xl font-bold mb-4">Data Latih</h1>
+        <router-link to="/form-train" class="ml-auto">
+          <Button variant="default" >Add Data Train</Button>
+        </router-link>
+      </div>
         <form class="mb-4 mt-2" @submit="submitFilter">
             <FormReuse name="search" type="search" placeholder="Cari Produk..." />
         </form>
@@ -14,6 +20,7 @@ import DataTable from '../DataTable.vue';
 import api from '@/lib/axios';
 import FormReuse from '../form-data/FormReuse.vue';
 import { toast } from 'vue-sonner';
+import Button from '../ui/button/Button.vue';
 
 
 const columns = [

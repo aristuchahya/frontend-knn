@@ -13,10 +13,10 @@
         <div class="grid gap-4">
             <form @submit="onSubmit">
                 <div class="grid gap-2">
-                    <FormReuse name="username" type="text" label="Username" />
+                    <FormReuse name="username" type="text" label="Username" placeholder="risttt"/>
                 </div>
                 <div class="grid gap-2">
-                    <FormReuse name="password" type="password" label="Password" />
+                    <FormReuse name="password" type="password" label="Password" placeholder="*******"/>
                 </div>
                 <Button type="submit" :disabled="isSubmitting" class="w-full cursor-pointer mt-2">
                   <span v-if="isSubmitting" class="animate-spin mr-2">⏳</span>

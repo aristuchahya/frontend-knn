@@ -25,7 +25,7 @@
             </form>
         </div>
         <div class="mt-4 text-center text-sm">
-          Don't have an account?
+          have an account?
           <router-link to="/login" class="underline">
             Sign in
           </router-link>

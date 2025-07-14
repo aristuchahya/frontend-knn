@@ -22,6 +22,7 @@ import DataTable from '../DataTable.vue';
 import api from '@/lib/axios';
 import { Button } from '../ui/button';
 import { toast } from 'vue-sonner';
+import FormReuse from '../form-data/FormReuse.vue';
 
 const sales = ref([] as any[]);
 const isLoading = ref(false);
