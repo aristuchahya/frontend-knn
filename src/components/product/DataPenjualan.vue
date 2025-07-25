@@ -1,10 +1,25 @@
 <template >
     <div class="p-4 w-1/2 m-auto">
-        <div class="flex">
+        <div class="flex items-center justify-between mb-4">
         <h1 class="text-xl font-bold mb-4">Daftar Penjualan </h1>
-        <router-link to="/form-sales" class="ml-auto">
-          <Button variant="default" >Add</Button>
-        </router-link>
+        <div class="flex gap-x-2">
+          <router-link to="/form-sales" class="">
+            <Button variant="default" >Add</Button>
+          </router-link>
+          <Button variant="default" class="cursor-pointer">
+            <JsonExcel
+              :data="excelData"
+              :fields="excelFields"
+              name="data-penjualan"
+              type="xls"
+              
+            >
+              Export Excel
+            </JsonExcel>
+            
+          </Button>
+
+        </div>
       </div>
       <form class="mb-4 mt-2" @submit="submitFilter">
         <FormReuse name="search" type="search" placeholder="Cari Penjualan..." />
@@ -23,25 +38,69 @@ import api from '@/lib/axios';
 import { Button } from '../ui/button';
 import { toast } from 'vue-sonner';
 import FormReuse from '../form-data/FormReuse.vue';
+import JsonExcel from "vue-json-excel3";
 
 const sales = ref([] as any[]);
 const isLoading = ref(false);
 const allResult = ref([]);
 
 const columns = [
+  { key: 'no', label: 'No' },
   { key: 'kode_ikan', label: 'Kode', headClass: 'w-[100px]' },
   { key: 'jenis_ikan', label: 'Nama' },
   { key: 'jumlah', label: 'Jumlah' },
   { key: 'tanggal', label: 'Tanggal' },
+  { key: 'hari', label: 'Hari' },
   // { key: 'actions', label: 'Actions' },
 ];
+
+const excelFields = {
+  no: 'no',
+  jenis_ikan: 'jenis_ikan',
+  hari: 'hari',
+  stok: 'stok',
+  terjual: 'jumlah',
+  tanggal: 'tanggal'
+}
+const excelData = ref<any[]>([])
+
+
+const fetchProducts = async () => {
+  isLoading.value = true
+  try {
+    const response = await api.get('sales/product')
+    const dataIndex = response.data.map((item: any, index: number) => ({
+      no: index + 1,
+      jenis_ikan: item.jenis_ikan,
+      stok: item.stok,
+      jumlah: item.jumlah,
+      hari: item.hari,
+      tanggal: item.tanggal
+
+    }))
+
+    excelData.value = dataIndex
+    // toast.success('Data Produk berhasil diambil')
+  } catch (error) {
+    toast.error('Data Penjualan masih kosong')
+  }
+}
 
 const fetchSales = async () => {
   isLoading.value = true
   try {
     const res = await api.get('/sales')
-    sales.value = res.data
-    allResult.value = res.data
+    const dataIndex = res.data.map((item: any, index: number) => ({
+      no: index + 1,
+      kode_ikan: item.kode_ikan,
+      jenis_ikan: item.jenis_ikan,
+      jumlah: item.jumlah,
+      tanggal: item.tanggal,
+      hari: item.hari
+    }))
+
+    sales.value = dataIndex
+    allResult.value = dataIndex
     toast.success('Data Penjualan berhasil diambil')
   } catch (error) {
     toast.error('Data Penjualan masih kosong')
@@ -74,7 +133,8 @@ const submitFilter = (event: SubmitEvent) => {
 }
 
 onMounted(() => {
-  fetchSales()
+  fetchSales(),
+  fetchProducts()
 })
 
 // const products = [

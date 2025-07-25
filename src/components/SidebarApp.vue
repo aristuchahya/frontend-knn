@@ -52,7 +52,8 @@ import {
   BadgePercent,
   Brain,
   Folders,
-  BookPlus
+  BookPlus,
+  ChartLine
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -68,6 +69,11 @@ const items = [
     title: "Data Penjualan",
     url: "/sales",
     icon: BadgePercent,
+  },
+  {
+    title: "Chart Penjualan",
+    url: "/chart",
+    icon : ChartLine
   },
   {
     title: "Data Latih",

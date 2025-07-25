@@ -32,6 +32,7 @@ const allResult = ref([]);
 
 
 const columns = [
+  { key: 'no', label: 'No' },
   { key: 'kode_ikan', label: 'Kode', headClass: 'w-[100px]' },
   { key: 'jenis_ikan', label: 'Nama' },
   { key: 'stok', label: 'Stok' },
@@ -42,8 +43,15 @@ const fetchProducts = async () => {
   isLoading.value = true
   try {
     const res = await api.get('/product')
-    products.value = res.data
-    allResult.value = res.data
+    const dataIndex = res.data.map((item: any, index: number) => ({
+      no: index + 1,
+      kode_ikan: item.kode_ikan,
+      jenis_ikan: item.jenis_ikan,
+      stok: item.stok,
+      harga: item.harga
+    }))
+    products.value = dataIndex
+    allResult.value = dataIndex
     toast.success('Data Produk berhasil diambil')
   } catch (error) {
     toast.error('Data Produk masih kosong')

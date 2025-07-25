@@ -8,7 +8,7 @@
             
             <form @submit="onSubmit" class="w-full space-y-6">
            
-                <FormReuse name="file"  type="file" accept=".xls, .xlsx" />
+                <FormReuse name="file"  type="file" accept=".xls, .xlsx" class="cursor-pointer"/>
                 
                 <Button type="submit" :disabled="isSubmitting" class="cursor-pointer" >
                 <span v-if="isSubmitting" class="animate-spin mr-2">⏳</span>

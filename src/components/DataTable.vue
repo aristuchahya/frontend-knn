@@ -58,7 +58,7 @@ const props = defineProps<{
 }>()
 
 const page = ref(1)
-const perPage = computed(() => props.perPage ?? 5)
+const perPage = computed(() => props.perPage ?? 10)
 
 watch(() => props.rows, () => {
   page.value = 1

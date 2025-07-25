@@ -1,3 +1,4 @@
+import MyChart from "@/components/chart-sales/MyChart.vue";
 import FormLatih from "@/components/form-data/FormLatih.vue";
 import FormProduct from "@/components/form-data/FormProduct.vue";
 import FormSales from "@/components/form-data/FormSales.vue";
@@ -28,6 +29,10 @@ const routes = [
             {
                 path: 'sales',
                 component: DataPenjualan
+            },
+            {
+                path: 'chart',
+                component: MyChart
             },
             {
                 path: 'train',
@@ -65,7 +70,8 @@ const routes = [
     {
         path: '/register',
         component: Register
-    }
+    },
+    
 ]
 
 const router = createRouter({
@@ -73,7 +79,7 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
     const token = sessionStorage.getItem('token')
     // const isAuthenticated = !!token
     if(to.meta.requiresAuth && !token) {
