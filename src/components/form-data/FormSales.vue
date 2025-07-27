@@ -9,7 +9,8 @@
                 <!-- <FormReuse name="kode_ikan" type="number" label="Kode Ikan" /> -->
                 <FormReuse name="jenis_ikan" type="text" label="Jenis Ikan" />
                 <FormReuse name="jumlah" type="number" label="Jumlah Penjualan" />
-                <FormReuse name="tanggal" type="text" label="Tanggal" placeholder="dd/mm/yyyy"/>
+                <FormReuse name="hari" type="text" label="Hari" />
+                <FormReuse name="tanggal" type="date" label="Tanggal" placeholder="dd/mm/yyyy"/>
                 <Button type="submit" :disabled="isSubmitting" class="cursor-pointer mt-4 ml-auto" >
                 <span v-if="isSubmitting" class="animate-spin mr-2">⏳</span>
                 {{ isSubmitting ? 'Memproses...' : 'Submit' }}
@@ -35,7 +36,9 @@ const router = useRouter()
 const formSchema = toTypedSchema(z.object({
     jenis_ikan: z.string().min(1, 'Jenis Ikan tidak boleh kosong'),
     jumlah: z.number().min(0, 'Jumlah tidak boleh kosong'),
-    tanggal: z.string().min(1, 'Tanggal tidak boleh kosong'),
+    hari: z.string().min(1, 'Hari tidak boleh kosong'),
+    tanggal: z.string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format tanggal harus YYYY-MM-DD'),
 }))
 
 const {handleSubmit, isSubmitting, resetForm} = useForm({

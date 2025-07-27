@@ -14,8 +14,8 @@
 
         <TableBody>
           <TableRow
-            v-for="(row, index) in paginatedRows"
-            :key="row.id ?? index"
+            v-for="row in paginatedRows"
+            :key="row.id"
           >
             <TableCell v-for="col in columns" :key="col.key">
               <slot :name="`cell-${col.key}`" :row="row">

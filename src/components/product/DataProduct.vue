@@ -10,10 +10,15 @@
         <FormReuse name="search" type="search" placeholder="Cari Produk..." />
       </form>
         
-        <DataTable :columns="columns" :rows="products">
-        <!-- <template #cell-actions="{ row }">
-            <Button size="sm" variant="outline" @click="editProduct(row)" >Edit</Button>
-        </template> -->
+        <DataTable :columns="columns" :rows="products" >
+          <template #cell-actions="{ row }">
+            <div class="flex gap-2">
+              <DialogProduct :product="row"/>
+               <Button size="sm" variant="destructive" @click="handleDelete(row.kode_ikan)">
+                  Delete
+              </Button>
+            </div>
+          </template>
         </DataTable>
         
     </div>
@@ -25,6 +30,10 @@ import api from '@/lib/axios';
 import FormReuse from '../form-data/FormReuse.vue';
 import { Button } from '../ui/button';
 import { toast } from 'vue-sonner';
+import DialogProduct from '../dialog-edit/DialogProduct.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const products = ref([] as any[]);
 const isLoading = ref(false);
@@ -37,24 +46,44 @@ const columns = [
   { key: 'jenis_ikan', label: 'Nama' },
   { key: 'stok', label: 'Stok' },
   { key: 'harga', label: 'Harga' },
+  { key: 'actions', label: 'Actions', headClass: 'w-[180px]', cellClass: 'w-[180px]' },
 ];
 
 const fetchProducts = async () => {
   isLoading.value = true
   try {
     const res = await api.get('/product')
-    const dataIndex = res.data.map((item: any, index: number) => ({
-      no: index + 1,
-      kode_ikan: item.kode_ikan,
-      jenis_ikan: item.jenis_ikan,
-      stok: item.stok,
-      harga: item.harga
-    }))
+    const dataIndex = res.data.map((item: any, index: number) => {
+      
+      const lastStock = item.stok_history?.length 
+        ? item.stok_history[item.stok_history.length - 1].stok_setelah 
+        : 0
+
+      return {
+        id: item.id,
+        no: index + 1,
+        kode_ikan: item.kode_ikan,
+        jenis_ikan: item.jenis_ikan,
+        stok: lastStock, 
+        harga: item.harga
+      }
+    })
     products.value = dataIndex
     allResult.value = dataIndex
     toast.success('Data Produk berhasil diambil')
   } catch (error) {
     toast.error('Data Produk masih kosong')
+  }
+}
+
+const handleDelete = async (kode: string) => {
+  try {
+    await api.delete(`/product/${kode}`)
+    products.value = products.value.filter(p => p.kode_ikan !== kode);
+    toast.success('Produk Berhasil Dihapus')
+    router.go(0)
+  } catch (error) {
+    toast.error('Produk Gagal Dihapus')
   }
 }
 
@@ -87,9 +116,7 @@ onMounted(() => {
   fetchProducts()
 })
 
-// function editProduct(product : any) {
-//   alert(`Edit product: ${product.id}`);
-// }
+
 
 </script>
 <style lang="">

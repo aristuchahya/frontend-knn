@@ -25,9 +25,14 @@
         <FormReuse name="search" type="search" placeholder="Cari Penjualan..." />
       </form>
         <DataTable :columns="columns" :rows="sales">
-        <!-- <template #cell-actions="{ row }">
-            <Button size="sm" variant="outline" @click="editProduct(row)">Edit</Button>
-        </template> -->
+        <template #cell-actions="{ row }">
+            <div class="flex gap-2">
+              <DialogSales :sales="row" @updated="updateRow"/>
+               <Button size="sm" variant="destructive" @click="handleDelete(row.id)">
+                  Delete
+              </Button>
+            </div>
+          </template>
         </DataTable>
     </div>
 </template>
@@ -39,6 +44,7 @@ import { Button } from '../ui/button';
 import { toast } from 'vue-sonner';
 import FormReuse from '../form-data/FormReuse.vue';
 import JsonExcel from "vue-json-excel3";
+import DialogSales from '../dialog-edit/DialogSales.vue';
 
 const sales = ref([] as any[]);
 const isLoading = ref(false);
@@ -51,7 +57,7 @@ const columns = [
   { key: 'jumlah', label: 'Jumlah' },
   { key: 'tanggal', label: 'Tanggal' },
   { key: 'hari', label: 'Hari' },
-  // { key: 'actions', label: 'Actions' },
+  { key: 'actions', label: 'Actions', headClass: 'w-[180px]', cellClass: 'w-[180px]' },
 ];
 
 const excelFields = {
@@ -60,24 +66,39 @@ const excelFields = {
   hari: 'hari',
   stok: 'stok',
   terjual: 'jumlah',
-  tanggal: 'tanggal'
+  tanggal: 'tanggal',
+  keterangan: 'keterangan'
 }
 const excelData = ref<any[]>([])
+
+const updateRow = (updated : any) => {
+  const index = sales.value.findIndex(s => s.id === updated.id)
+  if (index !== -1) {
+    sales.value[index] = updated  // ✅ langsung replace
+  }
+}
 
 
 const fetchProducts = async () => {
   isLoading.value = true
   try {
     const response = await api.get('sales/product')
-    const dataIndex = response.data.map((item: any, index: number) => ({
-      no: index + 1,
-      jenis_ikan: item.jenis_ikan,
-      stok: item.stok,
-      jumlah: item.jumlah,
-      hari: item.hari,
-      tanggal: item.tanggal
+    const dataIndex: any[] = []
 
-    }))
+    response.data.forEach((item: any) => {
+      // Loop setiap stok_history agar jadi baris sendiri
+      item.stok_history?.forEach((history: any) => {
+        dataIndex.push({
+          no: dataIndex.length + 1,
+          jenis_ikan: item.jenis_ikan,
+          stok: history.stok_setelah,   
+          jumlah: item.jumlah,
+          hari: item.hari,
+          tanggal: history.tanggal,    
+          keterangan: history.keterangan 
+        })
+      })
+    })
 
     excelData.value = dataIndex
     // toast.success('Data Produk berhasil diambil')
@@ -91,6 +112,7 @@ const fetchSales = async () => {
   try {
     const res = await api.get('/sales')
     const dataIndex = res.data.map((item: any, index: number) => ({
+      id : item.id,
       no: index + 1,
       kode_ikan: item.kode_ikan,
       jenis_ikan: item.jenis_ikan,
@@ -107,6 +129,15 @@ const fetchSales = async () => {
   }
 }
 
+const handleDelete = async (id : number) => {
+  try {
+    await api.delete(`/sales/${id}`)
+    toast.success('Data Penjualan berhasil dihapus')
+  } catch (error) {
+    toast.error('Data Penjualan gagal dihapus')
+  }
+}
+
 const submitFilter = (event: SubmitEvent) => {
   event.preventDefault()
   const keywords = ((event.target as any)[0].value as string).trim().toLowerCase().split(' ')
@@ -115,7 +146,7 @@ const submitFilter = (event: SubmitEvent) => {
     return
   }
   sales.value = allResult.value.map((product: any) => {
-    return [`${product.jenis_ikan} ${product.stok} ${product.harga}`.toLowerCase(), product]
+    return [`${product.jenis_ikan} ${product.tanggal} ${product.hari} ${product.jumlah}`.toLowerCase(), product]
   }).filter(([strMatch]) => {
     let matchAll = false
     for (const keyword of keywords) {

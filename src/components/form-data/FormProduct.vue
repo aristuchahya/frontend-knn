@@ -6,10 +6,11 @@
         </CardHeader>
         <CardContent>
             <form @submit="onSubmit" class="flex flex-col">
-                <FormReuse name="kode_ikan" type="number" label="Kode Ikan" />
+                <FormReuse name="kode_ikan" type="text" label="Kode Ikan" />
                 <FormReuse name="jenis_ikan" type="text" label="Jenis Ikan" />
                 <FormReuse name="harga" type="number" label="Harga" />
                 <FormReuse name="stok" type="number" label="Stok"/>
+                <FormReuse name="tanggal" type="date" label="Tanggal" placeholder="yyyy-mm-dd"/>
                 <Button type="submit" :disabled="isSubmitting" class="cursor-pointer mt-4 ml-auto" >
                 <span v-if="isSubmitting" class="animate-spin mr-2">⏳</span>
                 {{ isSubmitting ? 'Memproses...' : 'Submit' }}
@@ -33,10 +34,12 @@ import { Button } from '../ui/button';
 const router = useRouter()
 
 const formSchema = toTypedSchema(z.object({
-    kode_ikan: z.number().min(0, 'Kode Ikan tidak boleh kosong'),
+    kode_ikan: z.string().min(0, 'Kode Ikan tidak boleh kosong'),
     jenis_ikan: z.string().min(1, 'Jenis Ikan tidak boleh kosong'),
     harga: z.number().min(0, 'Harga tidak boleh kosong'),
     stok: z.number().min(0, 'Stok tidak boleh kosong'),
+    tanggal: z.string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format tanggal harus YYYY-MM-DD')
 }))
 
 const { handleSubmit, resetForm, isSubmitting} = useForm({
